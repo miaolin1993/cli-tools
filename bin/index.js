@@ -2,6 +2,7 @@
 import { Command } from 'commander'
 import { handleDownload } from '../utils/download.js'
 import { readFile } from 'fs/promises'
+import inquirer from 'inquirer'
 
 
 const commander = new Command()
@@ -13,17 +14,34 @@ const json = JSON.parse(
 )
 commander.version(json.version)
 
-// 定义一个新的命令 xxcli create xxx
-commander
-  .command('create <name>')
-  .description('create project')
-  .action(async (name) => {
-    try {
-      await handleDownload({ projectName: name })
-    } catch(err) {
-      throw new Error(err)
-    }
-  })
-// process表示当前主进程
-// argv 表示当前命令携带的参数
+const promptOption = [
+  {
+    type: "list",
+    name: "technology",
+    message: "Select your technology. ",
+    choices: ["react"]
+  },
+  {
+    type: "input",
+    name: "projectName",
+    message: "Input your project name.",
+  },
+]
+
+const hander = {
+  create: env => {
+    inquirer
+      .prompt(promptOption)
+      .then(async option => {
+        const { projectName } = option
+        await handleDownload({ projectName })
+      })
+  }
+}
+
+commander.arguments("<cmd> [env]").action(function(cmd, env) {
+  if (hander[cmd]) return hander[cmd](env)
+  console.log(`很抱歉，暂未实现该${cmd}命令`)
+})
+
 commander.parse(process.argv)
