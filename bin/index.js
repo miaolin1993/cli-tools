@@ -18,8 +18,8 @@ const promptOption = [
   {
     type: "list",
     name: "technology",
-    message: "Select your technology. ",
-    choices: ["react"]
+    message: "Select your technology(only React). ",
+    choices: ["React", "Vue"]
   },
   {
     type: "input",
@@ -29,7 +29,7 @@ const promptOption = [
 ]
 
 const hander = {
-  create: env => {
+  init: env => {
     inquirer
       .prompt(promptOption)
       .then(async option => {
